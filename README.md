@@ -1,5 +1,9 @@
 # Example: Auth in Next.js using OpenID Connect and Apollo Client
 
+> [!TIP]
+> Questions or issues? Check our [discord](https://discord.gg/H52JTZAtSH) channel for help.
+
+
 ## Getting Started
 
 You need to set up the OpenID Connect plugin in your Saleor dashboard.
