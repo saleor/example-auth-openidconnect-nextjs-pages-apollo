@@ -79,7 +79,7 @@ export default function Home() {
         <h1 className="text-2xl font-bold mb-4">Welcome to Saleor Auth Example</h1>
         <div>
           <p>
-            Click button below to login with OIDC provider. Dont forget to check our{" "}
+            Click button below to login with OIDC provider. Don&apos;t forget to check our{" "}
             <a
               href="https://docs.saleor.io/api-usage/authentication#oidc-single-sign-on-sso-flow"
               className="text-blue-500 underline"
