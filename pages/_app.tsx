@@ -1,32 +1,37 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
 
-import { ApolloProvider } from "@apollo/client";
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client";
 
-import { SaleorAuthProvider, useAuthChange, useSaleorAuthClient } from "@saleor/auth-sdk/react";
-import { useAuthenticatedApolloClient } from "@saleor/auth-sdk/react/apollo";
+import { createSaleorAuthClient } from "@saleor/auth-sdk";
+import { SaleorAuthProvider, useAuthChange } from "@saleor/auth-sdk/react";
 
-const SaleorURL = process.env.NEXT_PUBLIC_SALEOR_URL!;
+const saleorApiUrl = process.env.NEXT_PUBLIC_SALEOR_URL!;
+
+const saleorAuthClient = createSaleorAuthClient({ saleorApiUrl });
+
+const httpLink = createHttpLink({
+  uri: saleorApiUrl,
+  fetch: saleorAuthClient.fetchWithAuth,
+});
+
+export const apolloClient = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache(),
+});
 
 export default function App({ Component, pageProps }: AppProps) {
-  const saleorAuth = useSaleorAuthClient({ saleorApiUrl: SaleorURL });
-
-  const { apolloClient, reset, refetch } = useAuthenticatedApolloClient({
-    uri: SaleorURL,
-    fetchWithAuth: saleorAuth.saleorAuthClient.fetchWithAuth,
-  });
-
   useAuthChange({
-    saleorApiUrl: SaleorURL,
-    onSignedOut: () => reset(),
-    onSignedIn: () => refetch(),
+    saleorApiUrl,
+    onSignedOut: () => apolloClient.resetStore(),
+    onSignedIn: () => apolloClient.refetchQueries({ include: "all" }),
   });
 
   return (
-    <SaleorAuthProvider {...saleorAuth}>
+    <SaleorAuthProvider client={saleorAuthClient}>
       <ApolloProvider client={apolloClient}>
-          <Component {...pageProps} />
-        </ApolloProvider>
+        <Component {...pageProps} />
+      </ApolloProvider>
     </SaleorAuthProvider>
   );
 }
