@@ -1,8 +1,6 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+"use client";
 
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client";
-
 import { createSaleorAuthClient } from "@saleor/auth-sdk";
 import { SaleorAuthProvider, useAuthChange } from "@saleor/auth-sdk/react";
 
@@ -20,7 +18,7 @@ export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+export const Providers = ({ children }: { children: React.ReactNode }) => {
   useAuthChange({
     saleorApiUrl,
     onSignedOut: () => apolloClient.resetStore(),
@@ -29,9 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <SaleorAuthProvider client={saleorAuthClient}>
-      <ApolloProvider client={apolloClient}>
-        <Component {...pageProps} />
-      </ApolloProvider>
+      <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
     </SaleorAuthProvider>
   );
-}
+};
